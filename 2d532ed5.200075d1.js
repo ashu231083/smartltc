@@ -1,1 +1,0 @@
-(window.webpackJsonp=window.webpackJsonp||[]).push([[8],{75:function(a){a.exports=JSON.parse('{"allTagsPath":"/smartltc/blog/tags","slug":"hola","name":"hola","count":1,"permalink":"/smartltc/blog/tags/hola"}')}}]);
