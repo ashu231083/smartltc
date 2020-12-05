@@ -10,9 +10,21 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v1      
+      - name: Install Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '10.x'
+      - name: Install npm dependencies
+        run: npm install
+      - name: Run build task
+        run: |
+          cd my-website
+          npm run build --if-present
       - name: Push to server
         uses: appleboy/ssh-action@master
+        env: 
+          SOURCE: "smartltc/build/"
         with:
           host: "107.6.27.145"
           username: "root"
@@ -20,4 +32,12 @@ jobs:
           port: 22
           script: |
             cd /var/www/smartltc
-            git pull
+            git pull origin main
+            mix deps.get --only prod
+            MIX_ENV=prod mix compile
+            MIX_ENV=prod mix ecto.migrate
+            npm run build --prefix ./assets
+            mix phx.digest
+            MIX_ENV=prod mix release --overwrite
+            _build/prod/rel/omgneering/bin/omgneering stop
+            _build/prod/rel/omgneering/bin/omgneering daemon
