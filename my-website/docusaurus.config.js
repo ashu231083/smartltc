@@ -94,7 +94,7 @@ module.exports = {
           showReadingTime: true,
           // Please change this to your repo.
           editUrl:
-            'https://github.com/ashu231083/smartltc/tree/main/my-website/blog/',
+            'https://github.com/ashu231083/smartltc/tree/main/my-website/',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
