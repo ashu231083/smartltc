@@ -1,6 +1,6 @@
 ---
 slug: myfirstblog
-title: My First Blog
+title: My First Blogs
 author: Ashish Panchal
 author_title: Dynamic Methods Team
 author_url: https://github.com/ashu231083
