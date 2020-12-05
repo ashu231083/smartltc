@@ -1,65 +1,23 @@
-name: MainDeployCI
+name: CI
 
-on:
-  pull_request:
-    branches: [main]
+on: 
   push:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
-  checks:
-    if: github.event_name != 'push'
+  build:
+    name: Deploy
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - uses: actions/setup-node@v1
+      - name: Push to server
+        uses: appleboy/ssh-action@master
         with:
-          node-version: '12.x'
-      - name: Test Build
-        run: |
-          cd my-website
-          if [ -e yarn.lock ]; then
-          yarn install --frozen-lockfile
-          elif [ -e package-lock.json ]; then
-          npm ci
-          else
-          npm i
-          fi
-          npm run build
-  gh-release:
-    if: github.event_name != 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-node@v1
-        with:
-          node-version: '12.x'      
-      - name: Add key to allow access to repository
-        env:
-          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan github.com >> ~/.ssh/known_hosts
-          echo "${{ secrets.GH_PAGES_DEPLOY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          cat <<EOT >> ~/.ssh/config
-          Host github.com
-          HostName github.com
-          IdentityFile ~/.ssh/id_rsa
-          EOT
-      - name: Release to GitHub Pages
-        env:
-          USE_SSH: true
-          GIT_USER: git
-        run: |
-          git config --global user.email ${{secrets.GH_EMAIL}}
-          git config --global user.name ${{secrets.GH_USERNAME}}
-          cd my-website
-          if [ -e yarn.lock ]; then
-          yarn install --frozen-lockfile
-          elif [ -e package-lock.json ]; then
-          npm ci
-          else
-          npm i
-          fi
-          npx docusaurus deploy
+          host: "107.6.27.145"
+          username: "root"
+          key: ${{ secrets.SSH_SECRET }}
+          port: 22
+          script: |
+            cd /var/www/smartltc
+            git pull
